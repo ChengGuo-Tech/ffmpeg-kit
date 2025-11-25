@@ -41,7 +41,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-      - run: tree
       - name: prerequisites
         run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.22.1"
       - name: set up android ndk
@@ -51,8 +50,14 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        run: ./android.sh -d --enable-android-media-codec --enable-android-zlib --disable-x86 --disable-arm-v7a-neon --disable-arm64-v8a --disable-x86-64
+        run: ./android.sh -d --enable-android-media-codec --enable-android-zlib --disable-x86 --disable-arm-v7a-neon --disable-x86-64
       - run: tree
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: ffmpeg-kit.aar
+          path: android/ffmpeg-kit-android-lib/build/outputs/aar/ffmpeg-kit-release.aar
+          if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
