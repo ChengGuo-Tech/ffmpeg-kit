@@ -44,7 +44,7 @@ jobs:
       - name: prerequisites
         run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.22.1"
       - name: set up android ndk
-        if: ${{ never() }}
+        if: ${{ false }}
         run: |
           curl -s "https://dl.google.com/android/repository/android-ndk-${{ matrix.ndk-version }}.zip" -o ndk.zip
           unzip -q -o ndk.zip -d .ndk
