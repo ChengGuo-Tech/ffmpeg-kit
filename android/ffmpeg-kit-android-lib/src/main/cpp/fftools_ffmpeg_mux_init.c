@@ -282,8 +282,8 @@ static int enc_stats_init(OutputStream *ost, EncStats *es, int pre,
                           const char *path, const char *fmt_spec)
 {
     static const struct {
-        enum EncStatsType  type;
-        const char        *str;
+        enum EncStatsType           type;
+        const char                 *str;
         unsigned int                pre_only:1;
         unsigned int                post_only:1;
         unsigned int                need_input_data:1;
