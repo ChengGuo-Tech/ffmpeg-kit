@@ -1,16 +1,55 @@
 name: Flutter Build
 
 on:
-  push:
-    tag:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: '构建平台'
+        default: all
+        type: choice
+        options:
+          - android
+          - ios
+          - all
 
 jobs:
-  build-main-on-macos-sonoma:
+  build-android:
+    name: android main on linux
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up adopt jdk 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+      - name: prerequisites
+        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.22.1"
+      - name: set up android ndk
+        run: |
+          curl -s "https://dl.google.com/android/repository/android-ndk-r28-linux.zip" -o ndk.zip
+          unzip -q -o ndk.zip -d .ndk
+          echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
+      - name: run the build script
+        run: ./android.sh --enable-android-media-codec --enable-android-zlib --disable-x86
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: aar
+          path: prebuilt/ffmpeg-kit.aar
+          if-no-files-found: error
+      - name: print build logs
+        if: ${{ always() }}
+        run: cat build.log
+      - name: print ffbuild logs
+        if: ${{ failure() }}
+        run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -50 ./src/ffmpeg/ffbuild/config.log'
+  build-ios:
     name: ios main on sonoma
     runs-on: macos-15
-    strategy:
-      matrix:
-        xcode: [ '26.1' ]
     defaults:
       run:
         shell: bash
@@ -19,17 +58,38 @@ jobs:
       - name: prerequisites
         run: brew install autoconf automake libtool pkg-config curl git cmake nasm
       - name: set up xcode
-        run: echo "export DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
+        run: echo "export DEVELOPER_DIR=/Applications/Xcode_26.1.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
         run: ./ios.sh --xcframework --enable-ios-audiotoolbox --enable-ios-avfoundation --enable-ios-bzip2 --enable-ios-libiconv --enable-ios-videotoolbox --enable-ios-zlib --disable-arm64-mac-catalyst --disable-x86-64-mac-catalyst --disable-arm64e
-      - run: tar -cvf ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
-      - name: Release
-        uses: softprops/action-gh-release@v2
+      - run: tar -cvf ffmpeg-kit-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5.0.0
         with:
-          files: ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip
+          name: framework
+          path: ffmpeg-kit-ios-framework.zip
+          if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -50 ./src/ffmpeg/ffbuild/config.log'
+  composite:
+    name: Merge
+    runs-on: ubuntu-22.04
+    needs: [ build-android, build-ios]
+    steps:
+      - name: Download aar
+        id: aar
+        uses: actions/download-artifact@v6
+        with:
+          name: aar
+      - name: Download ios frameworks
+        id: framework
+        uses: actions/download-artifact@v6
+        with:
+          name: framework
+      - run: |
+          cat "{{ steps.aar.outputs.download-path }}"
+          cat "{{ steps.framework.outputs.download-path }}"
+
