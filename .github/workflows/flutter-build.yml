@@ -34,12 +34,12 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        run: ./android.sh --enable-android-media-codec --enable-android-zlib --disable-x86
+        run: ./android.sh --enable-android-media-codec --enable-android-zlib --disable-x86 --disable-arm-v7a-neon
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
         with:
           name: aar
-          path: prebuilt/ffmpeg-kit.aar
+          path: prebuilt/bundle-android-aar/ffmpeg-kit/ffmpeg-kit.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
@@ -60,7 +60,7 @@ jobs:
       - name: set up xcode
         run: echo "export DEVELOPER_DIR=/Applications/Xcode_26.1.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
-        run: ./ios.sh --xcframework --enable-ios-audiotoolbox --enable-ios-avfoundation --enable-ios-bzip2 --enable-ios-libiconv --enable-ios-videotoolbox --enable-ios-zlib --disable-arm64-mac-catalyst --disable-x86-64-mac-catalyst --disable-arm64e
+        run: ./ios.sh --xcframework --enable-gpl --enable-ios-audiotoolbox --enable-ios-avfoundation --enable-ios-bzip2 --enable-ios-libiconv --enable-ios-videotoolbox --enable-ios-zlib --disable-arm64-mac-catalyst --disable-x86-64-mac-catalyst --disable-arm64e
       - run: tar -cvf ffmpeg-kit-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
@@ -90,6 +90,6 @@ jobs:
         with:
           name: framework
       - run: |
-          cat "{{ steps.aar.outputs.download-path }}"
-          cat "{{ steps.framework.outputs.download-path }}"
+          echo "${{ steps.aar.outputs.download-path }}"
+          echo "${{ steps.framework.outputs.download-path }}"
 
