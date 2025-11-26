@@ -29,7 +29,7 @@ on:
 jobs:
   build-main-on-macos-sonoma:
     name: macos main on sonoma
-    runs-on: macos-14
+    runs-on: macos-15
     strategy:
       matrix:
         xcode: [ '26.1' ]
@@ -43,7 +43,7 @@ jobs:
       - name: set up xcode
         run: echo "export DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
-        run: ./macos.sh --xcframework --enable-macos-audiotoolbox --enable-macos-avfoundation --enable-macos-bzip2 --enable-macos-coreimage --enable-macos-libiconv --enable-macos-opencl --enable-macos-opengl --enable-macos-videotoolbox --enable-macos-zlib --target=12
+        run: ./macos.sh --xcframework --enable-macos-audiotoolbox --enable-macos-avfoundation --enable-macos-bzip2 --enable-macos-coreimage --enable-macos-libiconv --enable-macos-opencl --enable-macos-opengl --enable-macos-videotoolbox --enable-macos-zlib
       - run: brew install tree
       - run: tree prebuilt
       - name: print build logs

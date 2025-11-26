@@ -58,6 +58,11 @@ jobs:
           name: ffmpeg
           path: prebuilt/bundle-apple-xcframework-ios
           if-no-files-found: error
+      - run: tar -cvf ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
