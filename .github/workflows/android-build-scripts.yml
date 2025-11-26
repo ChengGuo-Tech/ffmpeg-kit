@@ -62,7 +62,7 @@ jobs:
         with:
           name: ffmpeg-kit
       - run: |
-          cat "{{ steps.aar.outputs.download-path }}"
+          echo "{{ steps.aar.outputs.download-path }}"
           ls -al
       - name: print build logs
         if: ${{ always() }}
