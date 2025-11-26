@@ -2,6 +2,7 @@ name: ios build scripts
 
 on:
   push:
+    tags:
     branches:
       - development
       - main
@@ -60,6 +61,7 @@ jobs:
           if-no-files-found: error
       - run: tar -cvf ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
       - name: Release
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
           files: ffmpeg-kit-min-gpl-6.0.LTS-ios-framework.zip
