@@ -54,8 +54,16 @@ jobs:
         uses: actions/upload-artifact@v5.0.0
         with:
           name: ffmpeg-kit
-          path: prebuilt/bundle-android-aar**/ffmpeg-kit/ffmpeg-kit.aar
+          path: prebuilt/bundle-android-aar/ffmpeg-kit/ffmpeg-kit.aar
           if-no-files-found: error
+      - name: Download aar
+        id: aar
+        uses: actions/download-artifact@v6
+        with:
+          name: ffmpeg-kit
+      - run: |
+          cat "{{ steps.aar.outputs.download-path }}"
+          ls -al
       - name: print build logs
         if: ${{ always() }}
         run: cat build.log
