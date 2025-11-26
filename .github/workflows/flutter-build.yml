@@ -92,4 +92,4 @@ jobs:
       - run: |
           echo "${{ steps.aar.outputs.download-path }}"
           echo "${{ steps.framework.outputs.download-path }}"
-
+          ls -al
