@@ -45,12 +45,18 @@ jobs:
       - name: run the build script
         run: ./ios.sh --xcframework --enable-ios-audiotoolbox --enable-ios-avfoundation --enable-ios-bzip2 --enable-ios-libiconv --enable-ios-videotoolbox --enable-ios-zlib --disable-arm64-mac-catalyst --disable-x86-64-mac-catalyst --disable-arm64e
       - run: brew install tree
-      - run: tree
+      - run: tree prebuilt
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
         with:
           name: prebuild
           path: prebuilt
+          if-no-files-found: error
+      - name: Upload artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: ffmpeg
+          path: prebuilt/bundle-apple-xcframework-ios
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
