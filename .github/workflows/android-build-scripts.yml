@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v5.0.0
         with:
           name: ffmpeg-kit
-          path: prebuilt/bundle-android-aar**/ffmpeg-kit.aar
+          path: prebuilt/bundle-android-aar**/ffmpeg-kit/ffmpeg-kit.aar
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
