@@ -34,7 +34,13 @@ jobs:
           unzip -q -o ndk.zip -d .ndk
           echo "ANDROID_NDK_ROOT=$PWD/.ndk/$(ls .ndk)" >> $GITHUB_ENV
       - name: run the build script
-        run: ./android.sh --enable-android-media-codec --enable-android-zlib --disable-x86 --disable-arm-v7a-neon
+        run: |
+          ./android.sh \
+            --enable-gpl
+            --enable-android-media-codec \
+            --enable-android-zlib \
+            --disable-x86 \
+            --disable-arm-v7a-neon
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
         with:
@@ -60,13 +66,23 @@ jobs:
       - name: set up xcode
         run: echo "export DEVELOPER_DIR=/Applications/Xcode_26.1.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
-        run: ./ios.sh --xcframework --enable-gpl --enable-ios-audiotoolbox --enable-ios-avfoundation --enable-ios-bzip2 --enable-ios-libiconv --enable-ios-videotoolbox --enable-ios-zlib --disable-arm64-mac-catalyst --disable-x86-64-mac-catalyst --disable-arm64e
-      - run: tar -cvf ffmpeg-kit-ios-framework.zip -C prebuilt/bundle-apple-xcframework-ios .
+        run: |
+          ./ios.sh --xcframework \
+            --enable-gpl \
+            --enable-ios-audiotoolbox \
+            --enable-ios-avfoundation \
+            --enable-ios-bzip2 \
+            --enable-ios-libiconv \
+            --enable-ios-videotoolbox \
+            --enable-ios-zlib \
+            --disable-arm64-mac-catalyst \
+            --disable-x86-64-mac-catalyst \
+            --disable-arm64e
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
         with:
           name: framework
-          path: ffmpeg-kit-ios-framework.zip
+          path: prebuilt/bundle-apple-xcframework-ios
           if-no-files-found: error
       - name: print build logs
         if: ${{ always() }}
@@ -75,6 +91,7 @@ jobs:
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -50 ./src/ffmpeg/ffbuild/config.log'
   composite:
+    if: false
     name: Merge
     runs-on: ubuntu-22.04
     needs: [ build-android, build-ios]
