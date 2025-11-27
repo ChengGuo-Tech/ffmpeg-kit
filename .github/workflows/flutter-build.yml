@@ -37,10 +37,10 @@ jobs:
         run: |
           ./android.sh \
             --enable-gpl \
+            --enable-libvidstab --enable-rubberband --enable-x264 --enable-x265 --enable-xvidcore \
             --enable-android-media-codec \
             --enable-android-zlib \
-            --disable-x86 \
-            --disable-arm-v7a-neon
+            --disable-x86
       - name: Upload artifact
         uses: actions/upload-artifact@v5.0.0
         with:
