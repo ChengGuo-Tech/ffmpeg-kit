@@ -28,6 +28,8 @@ jobs:
           java-version: '17'
       - name: prerequisites
         run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.22.1"
+      - name:
+        run: sudo apt-get install nasm
       - name: set up android ndk
         run: |
           curl -s "https://dl.google.com/android/repository/android-ndk-r28-linux.zip" -o ndk.zip
@@ -69,6 +71,7 @@ jobs:
         run: |
           ./ios.sh --xcframework \
             --enable-gpl \
+            --enable-libvidstab --enable-x264 --enable-x265 --enable-xvidcore \
             --enable-ios-audiotoolbox \
             --enable-ios-avfoundation \
             --enable-ios-bzip2 \
