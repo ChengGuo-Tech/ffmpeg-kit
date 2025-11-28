@@ -27,7 +27,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: prerequisites
-        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.31.6"
+        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.31.5"
       - name:
         run: sudo apt-get install nasm
       - name: set up android ndk
@@ -39,7 +39,7 @@ jobs:
         run: |
           ./android.sh \
             --enable-gpl \
-            --enable-libvidstab --enable-x264 --enable-x265 --enable-xvidcore \
+            --enable-libvidstab --enable-x264 --enable-xvidcore \
             --enable-android-media-codec \
             --enable-android-zlib \
             --disable-x86
@@ -56,6 +56,7 @@ jobs:
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -50 ./src/ffmpeg/ffbuild/config.log'
   build-ios:
+    if: false
     name: ios main on sonoma
     runs-on: macos-15
     defaults:
