@@ -27,7 +27,9 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: prerequisites
-        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.31.5"
+        run: |
+          rm -rf ${ANDROID_HOME}/cmake
+          ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "cmake;3.22.1"
       - name:
         run: sudo apt-get install nasm
       - name: set up android ndk
@@ -73,8 +75,6 @@ jobs:
         run: echo "export DEVELOPER_DIR=/Applications/Xcode_26.1.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
         run: |
-          cmake --version
-          which cmake
           ./ios.sh --xcframework \
             --enable-gpl \
             --enable-libvidstab --enable-x264 --enable-xvidcore \
@@ -99,23 +99,25 @@ jobs:
       - name: print ffbuild logs
         if: ${{ failure() }}
         run: '[[ -f ./src/ffmpeg/ffbuild/config.log ]] && tail -50 ./src/ffmpeg/ffbuild/config.log'
-  composite:
-    if: false
-    name: Merge
+  publish:
+    name: publish to pub
     runs-on: ubuntu-22.04
     needs: [ build-android, build-ios]
     steps:
+      - uses: actions/checkout@v4
       - name: Download aar
         id: aar
         uses: actions/download-artifact@v6
         with:
           name: aar
+          path: flutter/flutter/android/libs
       - name: Download ios frameworks
         id: framework
         uses: actions/download-artifact@v6
         with:
           name: framework
+          path: flutter/flutter/ios/Frameworks
       - run: |
           echo "${{ steps.aar.outputs.download-path }}"
           echo "${{ steps.framework.outputs.download-path }}"
-          ls -al
+          tree flutter
