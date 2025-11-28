@@ -69,6 +69,7 @@ jobs:
         run: echo "export DEVELOPER_DIR=/Applications/Xcode_26.1.app/Contents/Developer" > ~/.xcode.for.ffmpeg.kit.sh
       - name: run the build script
         run: |
+          alias cmake="$ANDROID_HOME/cmake/3.31.5/bin/cmake"
           ./ios.sh --xcframework \
             --enable-gpl \
             --enable-libvidstab --enable-x264 --enable-xvidcore \
