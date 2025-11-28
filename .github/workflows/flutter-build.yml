@@ -27,7 +27,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: prerequisites
-        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.22.1"
+        run: ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --uninstall "cmake;3.18.1" "cmake;3.31.6"
       - name:
         run: sudo apt-get install nasm
       - name: set up android ndk
